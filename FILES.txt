@@ -1,0 +1,13 @@
+Root:
+- build.gradle.kts
+- settings.gradle.kts
+- gradle.properties
+- README.md
+- gradlew / gradlew.bat
+- .github/workflows/android.yml
+
+App:
+- app/build.gradle.kts
+- app/src/main/AndroidManifest.xml
+- app/src/main/java/com/nullsec/messenger/*
+- app/src/main/res/*
