@@ -3,8 +3,6 @@ package com.nullmessenger
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.github.jan.supabase.auth.auth
-import io.github.jan.supabase.auth.providers.Email
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -28,14 +26,18 @@ fun signUp(email: String, password: String) {
             _isLoading.value = true
             _error.value = null
 
-            supabase.auth.signUpWith(Email) {
+            supabase.auth.signUpWith(
+                io.github.jan.supabase.auth.providers.Email
+            ) {
                 this.email = email
                 this.password = password
             }
 
             _isLoggedIn.value = true
+
         } catch (e: Exception) {
             _error.value = e.message ?: "Registration failed"
+
         } finally {
             _isLoading.value = false
         }
@@ -48,14 +50,18 @@ fun signIn(email: String, password: String) {
             _isLoading.value = true
             _error.value = null
 
-            supabase.auth.signInWith(Email) {
+            supabase.auth.signInWith(
+                io.github.jan.supabase.auth.providers.Email
+            ) {
                 this.email = email
                 this.password = password
             }
 
             _isLoggedIn.value = true
+
         } catch (e: Exception) {
             _error.value = e.message ?: "Login failed"
+
         } finally {
             _isLoading.value = false
         }
