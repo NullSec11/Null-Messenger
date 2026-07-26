@@ -1,0 +1,8 @@
+<resources>
+    <color name="null_bg">#050607</color>
+    <color name="null_bg_elevated">#101417</color>
+    <color name="null_neon">#68F0B2</color>
+    <color name="null_neon_soft">#2CE7A0</color>
+    <color name="null_text">#F2F6F4</color>
+    <color name="null_muted">#91A5A0</color>
+</resources>
