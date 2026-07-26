@@ -13,6 +13,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -25,91 +26,169 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 
 @Composable
 fun AppUi() {
+
     val authViewModel: AuthViewModel = viewModel()
+
+    val isLoading by authViewModel.isLoading.collectAsState()
+    val error by authViewModel.error.collectAsState()
+    val isLoggedIn by authViewModel.isLoggedIn.collectAsState()
 
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var isRegistering by remember { mutableStateOf(false) }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.Black)
-            .padding(24.dp),
-        verticalArrangement = Arrangement.Center
-    ) {
-        Text(
-            text = "NULL MESSENGER",
-            color = Color.White,
-            style = MaterialTheme.typography.headlineMedium
-        )
+    if (isLoggedIn) {
 
-        Spacer(modifier = Modifier.height(32.dp))
-
-        Text(
-            text = if (isRegistering) "CREATE ACCOUNT" else "SIGN IN",
-            color = Color.White
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        OutlinedTextField(
-            value = email,
-            onValueChange = { email = it },
-            modifier = Modifier.fillMaxWidth(),
-            label = {
-                Text("Email")
-            }
-        )
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        OutlinedTextField(
-            value = password,
-            onValueChange = { password = it },
-            modifier = Modifier.fillMaxWidth(),
-            label = {
-                Text("Password")
-            },
-            visualTransformation = PasswordVisualTransformation()
-        )
-
-        Spacer(modifier = Modifier.height(20.dp))
-
-        Button(
-            onClick = {
-                if (isRegistering) {
-                    authViewModel.signUp(email, password)
-                } else {
-                    authViewModel.signIn(email, password)
-                }
-            },
-            modifier = Modifier.fillMaxWidth()
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Black)
+                .padding(24.dp),
+            verticalArrangement = Arrangement.Center
         ) {
+
+            Text(
+                text = "NULL MESSENGER",
+                color = Color.White,
+                style = MaterialTheme.typography.headlineMedium
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Text(
+                text = "Welcome to Null Messenger.",
+                color = Color.White
+            )
+
+            Spacer(modifier = Modifier.height(32.dp))
+
+            Button(
+                onClick = {
+                    authViewModel.signOut()
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("SIGN OUT")
+            }
+        }
+
+    } else {
+
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Black)
+                .padding(24.dp),
+            verticalArrangement = Arrangement.Center
+        ) {
+
+            Text(
+                text = "NULL MESSENGER",
+                color = Color.White,
+                style = MaterialTheme.typography.headlineMedium
+            )
+
+            Spacer(modifier = Modifier.height(32.dp))
+
             Text(
                 text = if (isRegistering) {
                     "CREATE ACCOUNT"
                 } else {
                     "SIGN IN"
-                }
+                },
+                color = Color.White
             )
-        }
 
-        Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-        Button(
-            onClick = {
-                isRegistering = !isRegistering
-            },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text(
-                text = if (isRegistering) {
-                    "ALREADY HAVE AN ACCOUNT? SIGN IN"
-                } else {
-                    "CREATE NEW ACCOUNT"
-                }
+            OutlinedTextField(
+                value = email,
+                onValueChange = {
+                    email = it
+                },
+                modifier = Modifier.fillMaxWidth(),
+                label = {
+                    Text("Email")
+                },
+                singleLine = true
             )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            OutlinedTextField(
+                value = password,
+                onValueChange = {
+                    password = it
+                },
+                modifier = Modifier.fillMaxWidth(),
+                label = {
+                    Text("Password")
+                },
+                visualTransformation = PasswordVisualTransformation(),
+                singleLine = true
+            )
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            Button(
+                onClick = {
+
+                    if (email.isBlank() || password.isBlank()) {
+                        return@Button
+                    }
+
+                    if (isRegistering) {
+                        authViewModel.signUp(
+                            email = email,
+                            password = password
+                        )
+                    } else {
+                        authViewModel.signIn(
+                            email = email,
+                            password = password
+                        )
+                    }
+                },
+                modifier = Modifier.fillMaxWidth(),
+                enabled = !isLoading
+            ) {
+                Text(
+                    text = if (isLoading) {
+                        "PLEASE WAIT..."
+                    } else if (isRegistering) {
+                        "CREATE ACCOUNT"
+                    } else {
+                        "SIGN IN"
+                    }
+                )
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Button(
+                onClick = {
+                    isRegistering = !isRegistering
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    text = if (isRegistering) {
+                        "ALREADY HAVE AN ACCOUNT? SIGN IN"
+                    } else {
+                        "CREATE NEW ACCOUNT"
+                    }
+                )
+            }
+
+            if (error != null) {
+
+                Spacer(modifier = Modifier.height(20.dp))
+
+                Text(
+                    text = error ?: "",
+                    color = Color.Red
+                )
+            }
         }
     }
 }
