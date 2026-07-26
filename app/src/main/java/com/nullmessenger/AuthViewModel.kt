@@ -3,7 +3,6 @@ package com.nullmessenger
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.jan.supabase.auth.auth
-import io.github.jan.supabase.auth.providers.Email
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -19,16 +18,13 @@ class AuthViewModel : ViewModel() {
     private val _isLoggedIn = MutableStateFlow(false)
     val isLoggedIn: StateFlow<Boolean> = _isLoggedIn
 
-    fun signUp(
-        email: String,
-        password: String
-    ) {
+    fun signUp(email: String, password: String) {
         viewModelScope.launch {
             try {
                 _isLoading.value = true
                 _error.value = null
 
-                supabase.auth.signUpWith(Email) {
+                supabase.auth.signUpWith(io.github.jan.supabase.auth.providers.Email) {
                     this.email = email
                     this.password = password
                 }
@@ -37,23 +33,19 @@ class AuthViewModel : ViewModel() {
 
             } catch (e: Exception) {
                 _error.value = e.message ?: "Registration failed"
-
             } finally {
                 _isLoading.value = false
             }
         }
     }
 
-    fun signIn(
-        email: String,
-        password: String
-    ) {
+    fun signIn(email: String, password: String) {
         viewModelScope.launch {
             try {
                 _isLoading.value = true
                 _error.value = null
 
-                supabase.auth.signInWith(Email) {
+                supabase.auth.signInWith(io.github.jan.supabase.auth.providers.Email) {
                     this.email = email
                     this.password = password
                 }
@@ -62,7 +54,6 @@ class AuthViewModel : ViewModel() {
 
             } catch (e: Exception) {
                 _error.value = e.message ?: "Login failed"
-
             } finally {
                 _isLoading.value = false
             }
@@ -71,8 +62,12 @@ class AuthViewModel : ViewModel() {
 
     fun signOut() {
         viewModelScope.launch {
-            supabase.auth.signOut()
-            _isLoggedIn.value = false
+            try {
+                supabase.auth.signOut()
+                _isLoggedIn.value = false
+            } catch (e: Exception) {
+                _error.value = e.message ?: "Logout failed"
+            }
         }
     }
 }
