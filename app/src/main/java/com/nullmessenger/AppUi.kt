@@ -4,12 +4,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.weight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -31,7 +28,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -51,9 +47,7 @@ private val NullDarkColors = darkColorScheme(
 )
 
 @Composable
-fun NullMessengerTheme(
-    content: @Composable () -> Unit
-) {
+fun NullMessengerTheme(content: @Composable () -> Unit) {
     MaterialTheme(
         colorScheme = NullDarkColors,
         content = content
@@ -63,14 +57,6 @@ fun NullMessengerTheme(
 @Composable
 fun NullMessengerApp(
     viewModel: AppViewModel = viewModel()
-) {
-    ChatScreen(viewModel)
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun ChatScreen(
-    viewModel: AppViewModel
 ) {
     val messages by viewModel.messages.collectAsState()
     val draft by viewModel.draft.collectAsState()
@@ -84,15 +70,7 @@ fun ChatScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = {
-                    Text("Null Messenger")
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color(0xFF0F172A),
-                    titleContentColor = Color.White
-                )
-            )
+            NullTopBar()
         },
         bottomBar = {
             SendBar(
@@ -101,37 +79,43 @@ fun ChatScreen(
                 onSend = viewModel::sendMessage
             )
         }
-    ) { padding ->
+    ) { paddingValues ->
 
-        Column(
+        LazyColumn(
+            state = listState,
             modifier = Modifier
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background)
-                .padding(padding)
+                .padding(paddingValues)
+                .padding(12.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            LazyColumn(
-                state = listState,
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxWidth()
-                    .padding(12.dp),
-                verticalArrangement = Arrangement.spacedBy(10.dp)
-            ) {
-                items(
-                    items = messages,
-                    key = { it.id }
-                ) { message ->
-                    MessageBubble(message)
-                }
+            items(
+                items = messages,
+                key = { message -> message.id }
+            ) { message ->
+                MessageBubble(message)
             }
         }
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun MessageBubble(
-    message: ChatMessage
-) {
+private fun NullTopBar() {
+    TopAppBar(
+        title = {
+            Text("Null Messenger")
+        },
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = Color(0xFF0F172A),
+            titleContentColor = Color.White
+        )
+    )
+}
+
+@Composable
+private fun MessageBubble(message: ChatMessage) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = if (message.isMine) {
@@ -148,27 +132,14 @@ private fun MessageBubble(
                 Color(0xFF1F2937)
             }
         ) {
-            Column(
+            Text(
+                text = message.text,
+                color = Color.White,
                 modifier = Modifier.padding(
                     horizontal = 14.dp,
                     vertical = 10.dp
                 )
-            ) {
-                Text(
-                    text = message.text,
-                    color = Color.White
-                )
-
-                Spacer(
-                    modifier = Modifier.height(4.dp)
-                )
-
-                Text(
-                    text = message.time,
-                    color = Color(0xFFCBD5E1),
-                    style = MaterialTheme.typography.labelSmall
-                )
-            }
+            )
         }
     }
 }
@@ -184,12 +155,12 @@ private fun SendBar(
             .fillMaxWidth()
             .background(Color(0xFF0F172A))
             .padding(12.dp),
-        verticalAlignment = Alignment.Bottom
+        verticalAlignment = Alignment.CenterVertically
     ) {
         OutlinedTextField(
             value = draft,
             onValueChange = onDraftChange,
-            modifier = Modifier.weight(1f),
+            modifier = Modifier.fillMaxWidth(),
             placeholder = {
                 Text("Type a message...")
             },
@@ -204,20 +175,5 @@ private fun SendBar(
                 }
             )
         )
-
-        Spacer(
-            modifier = Modifier.padding(6.dp)
-        )
-
-        Button(
-            onClick = onSend,
-            enabled = draft.isNotBlank(),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFF8B5CF6),
-                contentColor = Color.White
-            )
-        ) {
-            Text("Send")
-        }
     }
 }
