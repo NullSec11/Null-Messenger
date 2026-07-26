@@ -5,7 +5,15 @@ plugins {
 }
 
 android {
-    namespace = "com.nullmessenger"
+    namespace = "com.nullmessenger" 
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+
+    kotlinOptions {
+        jvmTarget = "17"
+    }
 
     compileSdk = 35
 
