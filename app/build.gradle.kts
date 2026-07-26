@@ -12,12 +12,14 @@ android {
         applicationId = "com.nullmessenger"
         minSdk = 26
         targetSdk = 35
-        versionCode = 2
+        versionCode = 1
         versionName = "2.0"
     }
 
-    buildFeatures {
-        compose = true
+    buildTypes {
+        release {
+            isMinifyEnabled = false
+        }
     }
 
     compileOptions {
@@ -27,6 +29,16 @@ android {
 
     kotlinOptions {
         jvmTarget = "17"
+    }
+
+    buildFeatures {
+        compose = true
+    }
+
+    packaging {
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
     }
 }
 
@@ -42,4 +54,11 @@ dependencies {
     implementation("androidx.compose.material3:material3")
 
     debugImplementation("androidx.compose.ui:ui-tooling")
+
+    // SUPABASE
+    implementation("io.github.jan-tennert.supabase:postgrest-kt:3.1.4")
+    implementation("io.github.jan-tennert.supabase:auth-kt:3.1.4")
+    implementation("io.github.jan-tennert.supabase:storage-kt:3.1.4")
+
+    implementation("io.ktor:ktor-client-android:3.0.3")
 }
