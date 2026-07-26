@@ -10,16 +10,14 @@ android {
 
     defaultConfig {
         applicationId = "com.nullmessenger"
-        minSdk = 26
+        minSdk = 24
         targetSdk = 35
         versionCode = 1
-        versionName = "2.0"
+        versionName = "1.0"
     }
 
-    buildTypes {
-        release {
-            isMinifyEnabled = false
-        }
+    buildFeatures {
+        compose = true
     }
 
     compileOptions {
@@ -30,35 +28,23 @@ android {
     kotlinOptions {
         jvmTarget = "17"
     }
-
-    buildFeatures {
-        compose = true
-    }
-
-    packaging {
-        resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
-        }
-    }
 }
 
 dependencies {
-    implementation(platform("androidx.compose:compose-bom:2024.12.01"))
+    implementation("androidx.core:core-ktx:1.16.0")
+    implementation("androidx.activity:activity-compose:1.10.1")
 
-    implementation("androidx.core:core-ktx:1.15.0")
-    implementation("androidx.activity:activity-compose:1.10.0")
-
+    implementation(platform("androidx.compose:compose-bom:2025.05.00"))
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
 
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.9.1")
+
+    implementation("io.github.jan-tennert.supabase:auth-kt:3.2.2")
+    implementation("io.github.jan-tennert.supabase:postgrest-kt:3.2.2")
+    implementation("io.ktor:ktor-client-android:3.1.3")
+
     debugImplementation("androidx.compose.ui:ui-tooling")
-
-    // SUPABASE
-    implementation("io.github.jan-tennert.supabase:postgrest-kt:3.1.4")
-    implementation("io.github.jan-tennert.supabase:auth-kt:3.1.4")
-    implementation("io.github.jan-tennert.supabase:storage-kt:3.1.4")
-
-    implementation("io.ktor:ktor-client-android:3.0.3")
 }
